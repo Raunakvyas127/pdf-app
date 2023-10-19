@@ -1,0 +1,35 @@
+from PyPDF2 import PdfReader
+import re
+
+# Function to extract text from PDF
+def extract_text_from_pdf(file_path):
+    with open(file_path, 'rb') as file:
+        reader = PdfReader(file)
+        text = ''
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
+
+# Function to find answers in the text
+def find_answer_in_text(text, question):
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
+    for sentence in sentences:
+        if question.lower() in sentence.lower():
+            return sentence
+    return "Sorry, I couldn't find an answer to that question."
+
+# Main function for the Chat PDF App
+def main():
+    file_path = input("Enter the path of the PDF file: ")
+    pdf_text = extract_text_from_pdf(file_path)
+
+    while True:
+        question = input("Ask a question or type 'exit' to quit: ")
+        if question.lower() == 'exit':
+            break
+        else:
+            answer = find_answer_in_text(pdf_text, question)
+            print(answer)
+
+if __name__ == '__main__':
+    main()
